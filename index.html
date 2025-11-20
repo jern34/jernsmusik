@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Player</title>
+
+  <!-- Load Jerns font -->
+  <style>
+    @font-face {
+      font-family: 'Jerns';
+      src: url('jerns.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'Jerns', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #player {
+      background-color: #1e1e1e;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #000;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    #now-playing {
+      font-size: 24px;
+      color: #ff6600;
+      margin-bottom: 20px;
+      word-wrap: break-word;
+    }
+
+    #playlist {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #333;
+    }
+
+    #playlist li {
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    #playlist li:hover, #playlist li.active {
+      background-color: #444;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 15px;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="player">
+    <h2 id="now-playing">NOW PLAYING: None</h2>
+    <audio id="audio" controls></audio>
+    <ul id="playlist"></ul>
+  </div>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const nowPlaying = document.getElementById('now-playing');
+    const playlistEl = document.getElementById('playlist');
+
+    // ======== ADD YOUR SONGS HERE ========
+    const songs = [
+      { name: "New Jeans: Jiandro x Dxrkaii", file: "song1.mp3" },
+      { name: "UNNAMED SONG", file: "song2.mp3" },
+      { name: "UNNAMED SONG", file: "song3.mp3" }
+    ];
+
+    let currentIndex = null;
+
+    // Populate playlist in the UI
+    songs.forEach((song, index) => {
+      const li = document.createElement('li');
+      li.textContent = song.name;
+      li.addEventListener('click', () => playSong(index));
+      playlistEl.appendChild(li);
+    });
+
+    // Play a song by index
+    function playSong(index) {
+      const song = songs[index];
+      if (!song) return;
+
+      // Update audio source and play
+      audio.src = song.file;
+      audio.play();
+
+      // Update now playing
+      nowPlaying.textContent = `NOW PLAYING: ${song.name}`;
+
+      // Highlight active song
+      Array.from(playlistEl.children).forEach((li, i) => {
+        li.classList.toggle('active', i === index);
+      });
+
+      currentIndex = index;
+    }
+
+    // Auto-play next song
+    audio.addEventListener('ended', () => {
+      if (currentIndex !== null) {
+        const nextIndex = currentIndex + 1;
+        if (nextIndex < songs.length) {
+          playSong(nextIndex);
+        } else {
+          // Optional: restart playlist
+          playSong(0);
+        }
+      }
+    });
+
+    // Optional: play first song on load
+    // playSong(0);
+  </script>
+</body>
+</html>
